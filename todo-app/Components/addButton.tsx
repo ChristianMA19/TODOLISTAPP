@@ -1,20 +1,15 @@
-import { TouchableHighlight, Text } from "react-native";
+import { Pressable, Text } from "react-native";
+import { Link } from "expo-router";
+import { Circleadd } from "./Icons";
+
+// AddButton component to add a new task
 
 export const AddButton = () => (
-  <TouchableHighlight
-    underlayColor={"#4c87ba"}
-    onPress={() => {
-      alert("You pressed me");
-    }}
-    style={{
-      width: 130,
-      height: 70,
-      marginRight: 20,
-      borderRadius: 100,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "#0469c2",
-    }}>
-    <Text style={{ color: "#ffff", fontSize: 18 }}>Add Task</Text>
-  </TouchableHighlight>
+  <Link asChild href="/create">
+    <Pressable style={{ marginRight: 20 }}>
+      {({ pressed }) => (
+        <Circleadd size={40} style={{ opacity: pressed ? 0.5 : 1 }} />
+      )}
+    </Pressable>
+  </Link>
 );

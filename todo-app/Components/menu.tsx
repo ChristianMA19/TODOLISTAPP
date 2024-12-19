@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
-import { AddButton } from "./addButton";
+import { AddButton } from "./AddButton";
 
+// Menu component to display the title and add button like a navbar
 export const Menu = () => {
   return (
     <View style={styles.container}>

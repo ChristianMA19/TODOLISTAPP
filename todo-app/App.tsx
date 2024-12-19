@@ -1,20 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { StyleSheet, Text, View } from "react-native";
-import Displaytasks from "./Components/displayTasks";
-import { AddButton } from "./Components/addButton";
-import { Menu } from "./Components/menu";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import Main from "./components/Main";
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
-          <Menu />
-          <StatusBar style="auto" />
-          <Displaytasks />
-        </View>
-      </SafeAreaView>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Main />
+      </View>
     </SafeAreaProvider>
   );
 }
