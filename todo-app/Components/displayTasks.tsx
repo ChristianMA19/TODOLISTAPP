@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { TasksData } from "../models/Tasks";
 import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 // Displaytasks component to display all tasks
 // fetched from the server
@@ -75,7 +76,11 @@ const Displaytasks = () => {
     return (
       <Task
         task={item}
-        onPress={() => item.idTasks && setSelectedId(item.idTasks.toString())}
+        onPress={() =>
+          item.idTasks &&
+          (setSelectedId(item.idTasks.toString()),
+          router.push("/" + item.idTasks))
+        }
         backgroundColor={backgroundColor}
         textColor={color}
       />

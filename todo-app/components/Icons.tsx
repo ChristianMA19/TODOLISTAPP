@@ -18,3 +18,7 @@ export const Circleadd = (props: any) => {
 export const Backbutton = (props: any) => {
   return <Entypo name="back" size={24} {...props} />;
 };
+
+export const DeleteButton = (props: any) => {
+  return <AntDesign name="delete" size={24} {...props} />;
+};
