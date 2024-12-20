@@ -7,7 +7,7 @@ import router from "./routes/tasksRoutes";
 dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
