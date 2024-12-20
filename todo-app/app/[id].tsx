@@ -31,14 +31,17 @@ export default function DisplayTasks() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
 
   // modal to confirm task deletion
   const [modalVisible, setModalVisible] = useState(false);
 
   // modal to edit task
   const [editModalVisible, setEditModalVisible] = useState(false);
+
+  const [showstart, setShowstart] = useState(false);
+  const [showend, setShowend] = useState(false);
 
   // function to show toast messages
   const showToast = (type: string, text: string) => {
@@ -123,8 +126,8 @@ export default function DisplayTasks() {
     setTitle(task?.titleName || "");
     setDescription(task?.description || "");
     setStatus(task?.status || "");
-    setStartDate(task?.startDate ? new Date(task.startDate) : undefined);
-    setEndDate(task?.endDate ? new Date(task.endDate) : undefined);
+    setStartDate(task?.startDate ? new Date(task.startDate) : new Date());
+    setEndDate(task?.endDate ? new Date(task.endDate) : new Date());
   }, [task]);
 
   return (
@@ -271,31 +274,44 @@ export default function DisplayTasks() {
                 <Picker.Item label="In progress" value="in_progress" />
                 <Picker.Item label="Finished" value="finished" />
               </Picker>
-              <Text>Start Date</Text>
-              <DateTimePicker
-                value={startDate || new Date()}
-                mode="date"
-                display="default"
-                style={{ marginTop: 10 }}
-                onChange={(event, date) => {
-                  if (date) {
-                    setStartDate(date);
-                  }
-                }}
-              />
-              <Text>End Date</Text>
-              <DateTimePicker
-                value={endDate || new Date()}
-                mode="date"
-                display="default"
-                style={{ marginTop: 10 }}
-                minimumDate={startDate}
-                onChange={(event, enddate) => {
-                  if (enddate) {
-                    setEndDate(enddate);
-                  }
-                }}
-              />
+              <Text style={{margin:20}}>Start Date</Text>
+      <Pressable style={{marginLeft:20}} onPress={() => setShowstart(true)}>
+        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{startDate.toDateString()}</Text>
+      </Pressable>
+      {showstart ? (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          onChange={(event, date) => {
+            setShowstart(false);
+            if (date) {
+              setStartDate(date);
+              if (date > endDate) {
+                setEndDate(date);
+              }
+            }
+            
+          }}
+        />
+      ) : null}
+      <Text style={{margin:20}}>Due Date</Text>
+      <Pressable style={{marginLeft:20}} onPress={() => setShowend(true)}>
+        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{endDate.toDateString()}</Text>
+      </Pressable>
+      {showend ? (
+        <DateTimePicker
+          value={endDate}
+          mode="date"
+          display="default"
+          minimumDate={startDate}
+          onChange={(event, enddate) => {
+            setShowend(false);
+            if (enddate) {
+              setEndDate(enddate);
+            }
+          }}
+        />
+      ) : null}
               <Pressable
                 style={{
                   marginTop: 10,

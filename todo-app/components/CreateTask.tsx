@@ -20,6 +20,8 @@ export const CreateTask = () => {
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
+  const [showstart, setShowstart] = useState(false);
+  const [showend, setShowend] = useState(false);
 
   // States to store task details
   const [taskName, setTaskName] = useState("");
@@ -123,28 +125,43 @@ export const CreateTask = () => {
       </Picker>
       {/* date picker for start and end date */}
       <Text style={styles.text}>Start Date</Text>
-      <DateTimePicker
-        value={startDate}
-        mode="date"
-        display="default"
-        onChange={(event, date) => {
-          if (date) {
-            setStartDate(date);
-          }
-        }}
-      />
+      <Pressable style={{marginLeft:20}} onPress={() => setShowstart(true)}>
+        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{startDate.toDateString()}</Text>
+      </Pressable>
+      {showstart ? (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          onChange={(event, date) => {
+            setShowstart(false);
+            if (date) {
+              setStartDate(date);
+              if (date > endDate) {
+                setendDate(date);
+              }
+            }
+            
+          }}
+        />
+      ) : null}
       <Text style={styles.text}>Due Date</Text>
-      <DateTimePicker
-        value={endDate}
-        mode="date"
-        display="default"
-        minimumDate={startDate}
-        onChange={(event, enddate) => {
-          if (enddate) {
-            setendDate(enddate);
-          }
-        }}
-      />
+      <Pressable style={{marginLeft:20}} onPress={() => setShowend(true)}>
+        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{endDate.toDateString()}</Text>
+      </Pressable>
+      {showend ? (
+        <DateTimePicker
+          value={endDate}
+          mode="date"
+          display="default"
+          minimumDate={startDate}
+          onChange={(event, enddate) => {
+            setShowend(false);
+            if (enddate) {
+              setendDate(enddate);
+            }
+          }}
+        />
+      ) : null}
       {/* submit button */}
       <Pressable
         disabled={!submit}
