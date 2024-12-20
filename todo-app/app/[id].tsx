@@ -1,23 +1,45 @@
-import { Text, Modal, View, StyleSheet, Pressable } from "react-native";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import {
+  Text,
+  Modal,
+  View,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ScrollView,
+} from "react-native";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Backbutton } from "../components/Icons";
+import { Backbutton, EditButton } from "../components/Icons";
 import { TasksData } from "../models/Tasks";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { DeleteButton } from "../components/Icons";
 import Toast from "react-native-toast-message";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 // view to display all the information of a task
 // fetched from the server
 
 export default function DisplayTasks() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [task, setTask] = useState<TasksData>();
+  // values for the task edit modal
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
   // modal to confirm task deletion
   const [modalVisible, setModalVisible] = useState(false);
 
+  // modal to edit task
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
+  // function to show toast messages
   const showToast = (type: string, text: string) => {
     Toast.show({
       type: type,
@@ -55,9 +77,45 @@ export default function DisplayTasks() {
     }
   };
 
+  const updateTask = async () => {
+    const Task: TasksData = {
+      titleName: title,
+      description: description,
+      status: status,
+      startDate: startDate?.toISOString().split("T")[0] || "",
+      endDate: endDate?.toISOString().split("T")[0] || "",
+    };
+    try {
+      await fetch(`http://192.168.10.17:3000/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Task),
+      }).then(() => {
+        setTimeout(() => {
+          showToast("success", "Task updated successfully");
+        }, 500);
+        setEditModalVisible(false);
+        getTask();
+      });
+    } catch (error) {
+      console.error(error);
+      showToast("error", "Error updating task");
+    }
+  };
+
   useEffect(() => {
     getTask();
   }, []);
+
+  useEffect(() => {
+    setTitle(task?.titleName || "");
+    setDescription(task?.description || "");
+    setStatus(task?.status || "");
+    setStartDate(task?.startDate ? new Date(task.startDate) : undefined);
+    setEndDate(task?.endDate ? new Date(task.endDate) : undefined);
+  }, [task]);
 
   return (
     <View
@@ -74,6 +132,14 @@ export default function DisplayTasks() {
             )}
           </Pressable>
         </Link>
+        {/* edit button */}
+        <Pressable
+          style={{ justifyContent: "flex-end" }}
+          onPress={() => setEditModalVisible(true)}>
+          {({ pressed }) => (
+            <EditButton size={40} style={{ opacity: pressed ? 0.5 : 1 }} />
+          )}
+        </Pressable>
         {/* Delete button */}
         <Pressable
           onPress={() => setModalVisible(true)}
@@ -118,6 +184,7 @@ export default function DisplayTasks() {
             : "No date"}
         </Text>
       </View>
+
       {/* Modal view to authorize deletion */}
       <Modal
         animationType="slide"
@@ -166,6 +233,95 @@ export default function DisplayTasks() {
           </View>
         </View>
       </Modal>
+      {/* Modal for editing */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={editModalVisible}
+        onRequestClose={() => {
+          setEditModalVisible(!modalVisible);
+        }}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ScrollView style={{ width: "100%" }}>
+              <Text>Edit title</Text>
+              <TextInput
+                placeholder="Title"
+                value={title}
+                onChangeText={setTitle}
+                style={styles.input}
+              />
+              <Text>Description</Text>
+              <TextInput
+                placeholder="Description"
+                value={description}
+                onChangeText={setDescription}
+                style={styles.input}
+              />
+              <Text>Status</Text>
+              <Picker
+                selectedValue={status}
+                onValueChange={(itemValue, itemIndex) => setStatus(itemValue)}
+                style={[styles.picker, { marginVertical: 100 }]}>
+                <Picker.Item label="Not started" value="not_started" />
+                <Picker.Item label="In progress" value="in_progress" />
+                <Picker.Item label="Finished" value="finished" />
+              </Picker>
+              <Text>Start Date</Text>
+              <DateTimePicker
+                value={startDate || new Date()}
+                mode="date"
+                display="default"
+                style={{ marginTop: 10 }}
+                onChange={(event, date) => {
+                  if (date) {
+                    setStartDate(date);
+                  }
+                }}
+              />
+              <Text>End Date</Text>
+              <DateTimePicker
+                value={endDate || new Date()}
+                mode="date"
+                display="default"
+                style={{ marginTop: 10 }}
+                minimumDate={startDate}
+                onChange={(event, enddate) => {
+                  if (enddate) {
+                    setEndDate(enddate);
+                  }
+                }}
+              />
+              <Pressable
+                style={{
+                  marginTop: 10,
+                  backgroundColor: "green",
+                  padding: 10,
+                  borderRadius: 10,
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  updateTask();
+                }}>
+                <Text>Update Task</Text>
+              </Pressable>
+              <Pressable
+                style={{
+                  marginTop: 10,
+                  backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 10,
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setEditModalVisible(false);
+                }}>
+                <Text>Cancel</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
       <Toast position="bottom" />
     </View>
   );
@@ -179,5 +335,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  picker: {
+    height: 100,
+    width: "100%",
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   },
 });

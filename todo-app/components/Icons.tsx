@@ -22,3 +22,7 @@ export const Backbutton = (props: any) => {
 export const DeleteButton = (props: any) => {
   return <AntDesign name="delete" size={24} {...props} />;
 };
+
+export const EditButton = (props: any) => {
+  return <AntDesign name="edit" size={24} {...props} />;
+};
