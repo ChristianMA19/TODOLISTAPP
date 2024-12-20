@@ -162,34 +162,44 @@ export default function DisplayTasks() {
           )}
         </Pressable>
       </View>
-      <View>
-        <Text style={{ fontWeight: "bold", fontSize: 54 }}>
-          {task?.titleName}
-        </Text>
-        <Text style={{ fontSize: 20, marginTop: 10 }}>
-          Descripcion {"\n"}
-          {task?.description}
-        </Text>
-        <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 10 }}>
-          Status:{" "}
-          {task?.status === "not_started"
-            ? "Not Started"
-            : task?.status === "in_progress"
-            ? "In Progress"
-            : "Completed"}
-        </Text>
-        <Text style={{ fontSize: 20, marginTop: 10 }}>
-          Start Date:{" "}
-          {task?.startDate
-            ? format(new Date(task.startDate), "yyyy-MM-dd")
-            : "No date"}
-        </Text>
-        <Text style={{ fontSize: 20, marginTop: 10 }}>
-          End Date:
-          {task?.endDate
-            ? format(new Date(task.endDate), "yyyy-MM-dd")
-            : "No date"}
-        </Text>
+      <View style={[styles.container]}>
+        <ScrollView>
+          <Text style={{ fontWeight: "bold", fontSize: 54 }}>
+            {task?.titleName}
+          </Text>
+          <View
+            style={{ height: 2, backgroundColor: "black", marginVertical: 10 }}
+          />
+          <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 10 }}>
+            Description
+          </Text>
+          <Text style={{ fontSize: 20, marginTop: 10 }}>
+            {task?.description}
+          </Text>
+          <View
+            style={{ height: 2, backgroundColor: "black", marginVertical: 10 }}
+          />
+          <Text style={{ fontWeight: "bold", fontSize: 20, marginTop: 10 }}>
+            Status:{" "}
+            {task?.status === "not_started"
+              ? "Not Started"
+              : task?.status === "in_progress"
+              ? "In Progress"
+              : "Completed"}
+          </Text>
+          <Text style={{ fontSize: 20, marginTop: 10 }}>
+            Start Date:{" "}
+            {task?.startDate
+              ? format(new Date(task.startDate), "yyyy-MM-dd")
+              : "No date"}
+          </Text>
+          <Text style={{ fontSize: 20, marginTop: 10 }}>
+            End Date:
+            {task?.endDate
+              ? format(new Date(task.endDate), "yyyy-MM-dd")
+              : "No date"}
+          </Text>
+        </ScrollView>
       </View>
 
       {/* Modal view to authorize deletion */}
@@ -274,44 +284,61 @@ export default function DisplayTasks() {
                 <Picker.Item label="In progress" value="in_progress" />
                 <Picker.Item label="Finished" value="finished" />
               </Picker>
-              <Text style={{margin:20}}>Start Date</Text>
-      <Pressable style={{marginLeft:20}} onPress={() => setShowstart(true)}>
-        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{startDate.toDateString()}</Text>
-      </Pressable>
-      {showstart ? (
-        <DateTimePicker
-          value={startDate}
-          mode="date"
-          onChange={(event, date) => {
-            setShowstart(false);
-            if (date) {
-              setStartDate(date);
-              if (date > endDate) {
-                setEndDate(date);
-              }
-            }
-            
-          }}
-        />
-      ) : null}
-      <Text style={{margin:20}}>Due Date</Text>
-      <Pressable style={{marginLeft:20}} onPress={() => setShowend(true)}>
-        <Text style={{backgroundColor:"#f0f0f0", width:150, borderRadius: 50}}>{endDate.toDateString()}</Text>
-      </Pressable>
-      {showend ? (
-        <DateTimePicker
-          value={endDate}
-          mode="date"
-          display="default"
-          minimumDate={startDate}
-          onChange={(event, enddate) => {
-            setShowend(false);
-            if (enddate) {
-              setEndDate(enddate);
-            }
-          }}
-        />
-      ) : null}
+              <Text style={{ margin: 20 }}>Start Date</Text>
+              <Pressable
+                style={{ marginLeft: 20 }}
+                onPress={() => setShowstart(true)}>
+                <Text
+                  style={{
+                    backgroundColor: "#f0f0f0",
+                    width: 150,
+                    borderRadius: 50,
+                  }}>
+                  {startDate.toDateString()}
+                </Text>
+              </Pressable>
+              {showstart ? (
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  onChange={(event, date) => {
+                    setShowstart(false);
+                    if (date) {
+                      setStartDate(date);
+                      if (date > endDate) {
+                        setEndDate(date);
+                      }
+                    }
+                  }}
+                />
+              ) : null}
+              <Text style={{ margin: 20 }}>Due Date</Text>
+              <Pressable
+                style={{ marginLeft: 20 }}
+                onPress={() => setShowend(true)}>
+                <Text
+                  style={{
+                    backgroundColor: "#f0f0f0",
+                    width: 150,
+                    borderRadius: 50,
+                  }}>
+                  {endDate.toDateString()}
+                </Text>
+              </Pressable>
+              {showend ? (
+                <DateTimePicker
+                  value={endDate}
+                  mode="date"
+                  display="default"
+                  minimumDate={startDate}
+                  onChange={(event, enddate) => {
+                    setShowend(false);
+                    if (enddate) {
+                      setEndDate(enddate);
+                    }
+                  }}
+                />
+              ) : null}
               <Pressable
                 style={{
                   marginTop: 10,
