@@ -47,6 +47,9 @@ export const CreateTask = () => {
     });
   };
 
+  const ipLocal = process.env.EXPO_PUBLIC_IPLOCAL || "localhost";
+  const port = process.env.EXPO_PUBLIC_PORT || "3000";
+
   const handleSubmit = async () => {
     const Task: TasksData = {
       titleName: taskName,
@@ -58,7 +61,7 @@ export const CreateTask = () => {
 
     try {
       await axios
-        .post("http://192.168.10.17:3000/api/tasks", Task)
+        .post(`http://${ipLocal}:${port}/api/tasks`, Task)
         .then((response) => {
           setTimeout(() => {
             showToast("success", "Task created successfully");

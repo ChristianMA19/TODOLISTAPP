@@ -47,11 +47,12 @@ const Task = ({ task, onPress, backgroundColor, textColor }: TaskProps) => (
 const Displaytasks = () => {
   // Fetch tasks from the server
   const [tasks, setTasks] = useState<TasksData[]>([]);
-
+  const ipLocal = process.env.EXPO_PUBLIC_IPLOCAL || "localhost";
+  const port = process.env.EXPO_PUBLIC_PORT || "3000";
   const fetchTasks = async () => {
     try {
       await axios
-        .get("http://192.168.10.17:3000/api/tasks", {
+        .get(`http://${ipLocal}:${port}/api/tasks`, {
           timeout: 5000,
         })
         .then((tasks) => {

@@ -17,6 +17,7 @@ import { DeleteButton } from "../components/Icons";
 import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import axios from "axios";
 
 // view to display all the information of a task
 // fetched from the server
@@ -49,11 +50,16 @@ export default function DisplayTasks() {
     });
   };
 
+  const ipLocal = process.env.EXPO_PUBLIC_IPLOCAL || "localhost";
+  const port = process.env.EXPO_PUBLIC_PORT || "3000";
+
   // fetch task details from the server
   const getTask = async () => {
     try {
-      const response = await fetch(`http://192.168.10.17:3000/api/task/${id}`);
-      const data: TasksData = await response.json();
+      const response = await axios.get(
+        `http://${ipLocal}:${port}/api/task/${id}`
+      );
+      const data: TasksData = response.data;
       setTask(data);
     } catch (error) {
       console.error(error);
@@ -62,15 +68,15 @@ export default function DisplayTasks() {
   // delete task from the server
   const deleteTask = async () => {
     try {
-      await fetch(`http://192.168.10.17:3000/api/task/${id}`, {
-        method: "DELETE",
-      }).then(() => {
-        setTimeout(() => {
-          showToast("success", "Task deleted successfully");
-        }, 500);
-        setModalVisible(false);
-        router.push("/");
-      });
+      await axios
+        .delete(`http://${ipLocal}:${port}/api/task/${id}`, {})
+        .then(() => {
+          setTimeout(() => {
+            showToast("success", "Task deleted successfully");
+          }, 500);
+          setModalVisible(false);
+          router.push("/");
+        });
     } catch (error) {
       console.error(error);
       showToast("error", "Error deleting task");
@@ -86,19 +92,23 @@ export default function DisplayTasks() {
       endDate: endDate?.toISOString().split("T")[0] || "",
     };
     try {
-      await fetch(`http://192.168.10.17:3000/api/tasks/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Task),
-      }).then(() => {
-        setTimeout(() => {
-          showToast("success", "Task updated successfully");
-        }, 500);
-        setEditModalVisible(false);
-        getTask();
-      });
+      await axios
+        .put(
+          `http://${ipLocal}:${port}/api/tasks/${id}`,
+          JSON.stringify(Task),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(() => {
+          setTimeout(() => {
+            showToast("success", "Task updated successfully");
+          }, 500);
+          setEditModalVisible(false);
+          getTask();
+        });
     } catch (error) {
       console.error(error);
       showToast("error", "Error updating task");
