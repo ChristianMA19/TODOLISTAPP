@@ -177,12 +177,6 @@ export default function DisplayTasks() {
             ? format(new Date(task.endDate), "yyyy-MM-dd")
             : "No date"}
         </Text>
-        <Text style={{ fontSize: 20, marginTop: 10 }}>
-          Created at:{" "}
-          {task?.createdAt
-            ? format(new Date(task.createdAt), "yyyy-MM-dd")
-            : "No date"}
-        </Text>
       </View>
 
       {/* Modal view to authorize deletion */}
