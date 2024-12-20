@@ -18,9 +18,27 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
+export const getTask = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM tasks WHERE idTasks = ?", [id]);
+    const tasks: Task[] = rows as Task[];
+
+    if (tasks.length === 0) {
+      res.status(200).json({ message: "Task not found" });
+    } else {
+      res.status(200).json(tasks[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const createTask = async (req: Request, res: Response) => {
   const task: Task = req.body;
-  console.log(task);
   try {
     await db
       .promise()
@@ -57,9 +75,10 @@ export const updateTask = async (req: Request, res: Response) => {
 };
 
 export const deleteTasks = async (req: Request, res: Response) => {
+  const id = req.params.id;
   try {
-    await db.promise().query("DELETE FROM tasks WHERE status = 'finished'");
-    res.status(200).json({ message: "Tasks deleted" });
+    await db.promise().query("DELETE FROM tasks WHERE idTasks = ?", [id]);
+    res.status(200).json({ message: "Task deleted" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
